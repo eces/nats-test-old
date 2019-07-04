@@ -1,0 +1,80 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nats-main
+spec:
+  selector:
+    name: nats-main
+  clusterIP: None
+  ports:
+  - name: a # Actually, no port is needed.
+    port: 4222
+    targetPort: 4222
+  - name: b # Actually, no port is needed.
+    port: 6222
+    targetPort: 6222
+  - name: c # Actually, no port is needed.
+    port: 8222
+    targetPort: 8222
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nats-sub
+spec:
+  selector:
+    name: nats-sub
+  clusterIP: None
+  ports:
+  - name: a # Actually, no port is needed.
+    port: 4223
+    targetPort: 4223
+  - name: b # Actually, no port is needed.
+    port: 6223
+    targetPort: 6223
+  - name: c # Actually, no port is needed.
+    port: 8223
+    targetPort: 8223
+# ---
+# apiVersion: v1
+# kind: Pod
+# metadata:
+#   name: nats-main
+#   labels:
+#     name: nats
+# spec:
+#   hostname: nats-1
+#   subdomain: default-subdomain
+#   containers:
+#   - name: nats
+#     image: nats
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nats-main
+  labels:
+    name: nats-main
+spec:
+  hostname: nats-main
+  subdomain: default-subdomain
+  containers:
+  - name: nats
+    image: nats
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nats-sub
+  labels:
+    name: nats-sub
+spec:
+  hostname: nats-sub
+  subdomain: default-subdomain
+  containers:
+  - name: nats
+    image: nats
+    command:
+      - -c nats-server.conf -routes=nats-route://ruser:T0pS3cr3t@nats-main:6222 -DV
+---
